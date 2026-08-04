@@ -5,20 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="A personal project hub for experiments, tools, and ideas.">
   <meta name="theme-color" content="#030712">
-  <title>ai9an — Project Hub</title>
+  <title>ai9an.com</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@300;400;500;600&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
   <style>
     :root {
-      --void: #02040b;
-      --space: #030712;
-      --space-blue: #061126;
+      --void: #000000;
+      --space: #000103;
+      --space-blue: #040a17;
       --surface: rgba(8, 17, 34, 0.68);
       --surface-strong: rgba(7, 14, 28, 0.9);
       --line: rgba(159, 190, 230, 0.15);
       --line-bright: rgba(171, 207, 255, 0.35);
-      --text: #f0f6ff;
+      --text: #5d6775;
+      --title: #0d1726;
       --muted: #9aa9be;
       --blue: #91cfff;
       --blue-soft: #4c82bd;
@@ -188,6 +189,7 @@
     h1 {
       margin: 0;
       max-width: 10ch;
+      color: var(--title);
       font-family: var(--font-display);
       font-size: clamp(4.8rem, 12vw, 10rem);
       font-weight: 620;
@@ -740,24 +742,33 @@
 
       const diskGeometry = new THREE.RingGeometry(1.38, 5.65, 256, 18);
       const diskMaterial = new THREE.ShaderMaterial({
-        uniforms: { uTime: { value: 0 } },
+        uniforms: {
+          uTime: { value: 0 },
+          uLayer: { value: 0 }
+        },
         vertexShader: `
           varying vec2 vDisk;
           varying float vRadius;
+          varying float vCameraSide;
           void main() {
             vDisk = position.xy;
             vRadius = length(position.xy);
             vec3 p = position;
             float a = atan(p.y, p.x);
             p.z += sin(a * 3.0) * .035 * smoothstep(1.5, 5.5, vRadius);
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+            vec4 viewPosition = modelViewMatrix * vec4(p, 1.0);
+            vec4 viewCenter = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);
+            vCameraSide = viewPosition.z - viewCenter.z;
+            gl_Position = projectionMatrix * viewPosition;
           }
         `,
         fragmentShader: `
           precision highp float;
           uniform float uTime;
+          uniform float uLayer;
           varying vec2 vDisk;
           varying float vRadius;
+          varying float vCameraSide;
 
           float hash(vec2 p) {
             p = fract(p * vec2(123.34, 456.21));
@@ -773,53 +784,69 @@
           }
 
           void main() {
+            // The far half renders before the horizon and the near half after it.
+            // This avoids transparent depth writes, which produce missing wedges
+            // on some browser/GPU combinations.
+            if (uLayer < .5 && vCameraSide >= 0.0) discard;
+            if (uLayer > .5 && vCameraSide < 0.0) discard;
+
             float r = vRadius;
             float rn = (r - 1.38) / 4.27;
             float angle = atan(vDisk.y, vDisk.x);
-            float orbitalSpeed = uTime * (2.3 / pow(r, .58));
+            // Rotate a coherent texture slowly. Keeping one angular offset for
+            // every noise octave prevents the pattern from morphing over time.
+            float rotation = sin(uTime * .055) * .08;
 
             // Circular coordinates keep the texture continuous where atan wraps
             // from PI to -PI. Integer angular frequencies guarantee a closed seam.
-            float flowAngle = angle + r * .82 - orbitalSpeed;
+            float flowAngle = angle - rotation + r * .82;
             vec2 flow = vec2(cos(flowAngle), sin(flowAngle));
-            float detailAngle = angle * 4.0 + r * 1.7 - orbitalSpeed * 1.9;
+            float detailAngle = (angle - rotation) * 4.0 + r * 1.7;
             vec2 detailFlow = vec2(cos(detailAngle), sin(detailAngle));
             float filaments = noise(flow * 3.2 + vec2(r * 1.8, -r * .7));
             filaments *= .65 + .35 * noise(detailFlow * 2.6 + vec2(r * 2.7, -r * 1.1));
             float radialWarp = noise(vec2(cos(angle), sin(angle)) * 2.3 + vec2(r * .17));
-            float bands = .55 + .45 * sin(r * 32.0 + radialWarp * 5.0);
-            float density = mix(filaments, bands, .28);
-            density = smoothstep(.1, .92, density + .18);
+            float bands = .62 + .38 * sin(r * 18.0 + radialWarp * 3.5);
+            float density = mix(filaments, bands, .16);
+            density = smoothstep(.04, .98, density + .16);
 
-            vec3 inner = vec3(.86, .94, 1.0);
-            vec3 hot = vec3(.28, .62, 1.0);
-            vec3 warm = vec3(1.0, .46, .11);
-            vec3 outer = vec3(.42, .045, .025);
+            vec3 inner = vec3(.76, .82, .87);
+            vec3 hot = vec3(.31, .43, .57);
+            vec3 warm = vec3(.60, .46, .33);
+            vec3 outer = vec3(.18, .11, .09);
             vec3 color = mix(inner, hot, smoothstep(0.0, .17, rn));
             color = mix(color, warm, smoothstep(.15, .62, rn));
             color = mix(color, outer, smoothstep(.58, 1.0, rn));
 
             float approaching = .48 + .52 * dot(normalize(vDisk), normalize(vec2(-.82, .25)));
-            float doppler = mix(.44, 1.7, pow(approaching, 1.35));
+            float doppler = mix(.52, 1.28, pow(max(approaching, 0.0), 1.35));
             color *= doppler;
-            color += inner * pow(1.0 - rn, 7.0) * 1.9;
+            color += inner * pow(1.0 - rn, 7.0) * .90;
 
             float innerFade = smoothstep(1.38, 1.53, r);
             float outerFade = 1.0 - smoothstep(4.7, 5.65, r);
-            float alpha = density * innerFade * outerFade * (.38 + 1.05 * pow(1.0 - rn, 1.7));
+            float alpha = density * innerFade * outerFade * (.38 + .88 * pow(1.0 - rn, 1.7));
             alpha *= mix(.7, 1.0, approaching);
-            gl_FragColor = vec4(color * alpha * 1.28, alpha);
+            gl_FragColor = vec4(color * alpha * .96, alpha);
           }
         `,
         transparent: true,
         depthWrite: false,
-        side: THREE.DoubleSide,
+        depthTest: false,
+        side: THREE.FrontSide,
         blending: THREE.AdditiveBlending
       });
-      const accretionDisk = new THREE.Mesh(diskGeometry, diskMaterial);
-      accretionDisk.rotation.set(1.19, 0.08, -0.13);
-      accretionDisk.renderOrder = 1;
-      universe.add(accretionDisk);
+      const farDisk = new THREE.Mesh(diskGeometry, diskMaterial);
+      farDisk.rotation.set(1.19, 0.08, -0.13);
+      farDisk.renderOrder = 1;
+      universe.add(farDisk);
+
+      const nearDiskMaterial = diskMaterial.clone();
+      nearDiskMaterial.uniforms.uLayer.value = 1;
+      const nearDisk = new THREE.Mesh(diskGeometry, nearDiskMaterial);
+      nearDisk.rotation.copy(farDisk.rotation);
+      nearDisk.renderOrder = 3;
+      universe.add(nearDisk);
 
       const lensGeometry = new THREE.RingGeometry(.98, 1.64, 192, 10);
       const lensMaterial = new THREE.ShaderMaterial({
@@ -838,17 +865,18 @@
           void main() {
             float r = length(vP);
             float a = atan(vP.y, vP.x);
-            float ring = exp(-pow((r - 1.075) * 24.0, 2.0));
+            float photonRing = exp(-pow((r - 1.075) * 24.0, 2.0));
             float warpedDisk = exp(-pow((abs(vP.y) - .58 - .10 * cos(a * 2.0)) * 13.0, 2.0));
             warpedDisk *= smoothstep(.94, 1.2, r) * (1.0 - smoothstep(1.42, 1.66, r));
-            float flicker = .72 + .28 * sin(a * 20.0 - uTime * 1.7 + sin(a * 7.0) * 2.0);
-            float beam = ring * (.35 + .65 * pow(max(0.0, cos(a + 2.6)), 2.0));
-            float alpha = (beam * .72 + warpedDisk * flicker * .48);
-            vec3 blue = vec3(.42, .72, 1.0);
-            vec3 gold = vec3(1.0, .47, .12);
+            float flicker = .92 + .08 * sin(a * 12.0 - uTime * .10 + sin(a * 5.0) * 1.2);
+            float directionalLight = pow(max(0.0, cos(a + 2.6)), 2.0);
+            float beam = photonRing * (.84 + .16 * directionalLight);
+            float alpha = beam * .74 + warpedDisk * flicker * .40;
+            vec3 blue = vec3(.35, .48, .62);
+            vec3 gold = vec3(.58, .42, .27);
             vec3 color = mix(gold, blue, smoothstep(-.45, .75, cos(a + 2.6)));
-            color += vec3(.85, .94, 1.0) * ring * .7;
-            gl_FragColor = vec4(color * alpha * 1.5, alpha);
+            color += vec3(.65, .72, .78) * photonRing * .62;
+            gl_FragColor = vec4(color * alpha, alpha);
           }
         `,
         transparent: true,
@@ -858,7 +886,7 @@
       });
       const lens = new THREE.Mesh(lensGeometry, lensMaterial);
       lens.position.z = .26;
-      lens.renderOrder = 3;
+      lens.renderOrder = 4;
       universe.add(lens);
 
       const horizonMaterial = new THREE.ShaderMaterial({
@@ -883,11 +911,15 @@
             vec3 viewDir = normalize(uView - vWorld);
             float fresnel = pow(1.0 - max(dot(vNormal, viewDir), 0.0), 5.5);
             float redshift = smoothstep(-.7, .8, vNormal.x);
-            vec3 edge = mix(vec3(.22, .015, .012), vec3(.08, .24, .54), redshift);
+            vec3 shiftedEdge = mix(vec3(.24, .08, .055), vec3(.10, .25, .43), redshift);
+            vec3 edge = mix(vec3(.13, .18, .25), shiftedEdge, .58);
             vec3 blackBody = vec3(.0005, .0012, .0035);
-            gl_FragColor = vec4(blackBody + edge * fresnel * .8, 1.0);
+            gl_FragColor = vec4(blackBody + edge * fresnel * .76, 1.0);
           }
-        `
+        `,
+        transparent: true,
+        depthWrite: false,
+        depthTest: false
       });
       const horizon = new THREE.Mesh(new THREE.SphereGeometry(1.02, 64, 48), horizonMaterial);
       horizon.renderOrder = 2;
@@ -999,6 +1031,7 @@
       function render(timeMs = 0) {
         const time = reducedMotion.matches ? 11.5 : (timeMs - start) * .001;
         diskMaterial.uniforms.uTime.value = time;
+        nearDiskMaterial.uniforms.uTime.value = time;
         lensMaterial.uniforms.uTime.value = time;
 
         orbiters.forEach((item) => updateOrbiter(item, time));
