@@ -1,3 +1,4 @@
 ## Contributors
-[<img src="https://githubusercontent.com" width="50px;" style="border-radius:50%;"/>](https://github.com/openai)
+![Co-authored with OpenAI Codex](https://shields.io)
+
 _This project is assisted by [codex](https://github.com/openai)._
