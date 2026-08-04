@@ -6,6 +6,8 @@
 
 ![Preview](readme-preview.png)
 
-</div>## Contributors
+<div align="left">
+
+# Contributors
 
 _This project is assisted by [codex](https://github.com/openai)._
