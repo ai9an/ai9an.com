@@ -793,27 +793,28 @@
             float r = vRadius;
             float rn = (r - 1.38) / 4.27;
             float angle = atan(vDisk.y, vDisk.x);
-            // Rotate a coherent texture slowly. Keeping one angular offset for
-            // every noise octave prevents the pattern from morphing over time.
-            float rotation = sin(uTime * .055) * .08;
+            // Rotate one coherent texture at roughly one revolution per six
+            // minutes. Wrapping at TAU avoids long-running precision drift.
+            float rotation = mod(uTime * .018, 6.28318530718);
+            float textureAngle = angle - rotation;
 
             // Circular coordinates keep the texture continuous where atan wraps
             // from PI to -PI. Integer angular frequencies guarantee a closed seam.
-            float flowAngle = angle - rotation + r * .82;
+            float flowAngle = textureAngle + r * .82;
             vec2 flow = vec2(cos(flowAngle), sin(flowAngle));
-            float detailAngle = (angle - rotation) * 4.0 + r * 1.7;
+            float detailAngle = textureAngle * 4.0 + r * 1.7;
             vec2 detailFlow = vec2(cos(detailAngle), sin(detailAngle));
             float filaments = noise(flow * 3.2 + vec2(r * 1.8, -r * .7));
             filaments *= .65 + .35 * noise(detailFlow * 2.6 + vec2(r * 2.7, -r * 1.1));
-            float radialWarp = noise(vec2(cos(angle), sin(angle)) * 2.3 + vec2(r * .17));
-            float bands = .62 + .38 * sin(r * 18.0 + radialWarp * 3.5);
-            float density = mix(filaments, bands, .16);
+            float radialWarp = noise(vec2(cos(textureAngle), sin(textureAngle)) * 2.3 + vec2(r * .17));
+            float bands = .64 + .36 * sin(r * 14.0 + radialWarp * 3.0);
+            float density = mix(filaments, bands, .12);
             density = smoothstep(.04, .98, density + .16);
 
             vec3 inner = vec3(.76, .82, .87);
             vec3 hot = vec3(.31, .43, .57);
-            vec3 warm = vec3(.60, .46, .33);
-            vec3 outer = vec3(.18, .11, .09);
+            vec3 warm = vec3(.20, .23, .28);
+            vec3 outer = vec3(.08, .10, .13);
             vec3 color = mix(inner, hot, smoothstep(0.0, .17, rn));
             color = mix(color, warm, smoothstep(.15, .62, rn));
             color = mix(color, outer, smoothstep(.58, 1.0, rn));
@@ -873,8 +874,8 @@
             float beam = photonRing * (.84 + .16 * directionalLight);
             float alpha = beam * .74 + warpedDisk * flicker * .40;
             vec3 blue = vec3(.35, .48, .62);
-            vec3 gold = vec3(.58, .42, .27);
-            vec3 color = mix(gold, blue, smoothstep(-.45, .75, cos(a + 2.6)));
+            vec3 graphite = vec3(.18, .21, .26);
+            vec3 color = mix(graphite, blue, smoothstep(-.45, .75, cos(a + 2.6)));
             color += vec3(.65, .72, .78) * photonRing * .62;
             gl_FragColor = vec4(color * alpha, alpha);
           }
@@ -911,7 +912,7 @@
             vec3 viewDir = normalize(uView - vWorld);
             float fresnel = pow(1.0 - max(dot(vNormal, viewDir), 0.0), 5.5);
             float redshift = smoothstep(-.7, .8, vNormal.x);
-            vec3 shiftedEdge = mix(vec3(.24, .08, .055), vec3(.10, .25, .43), redshift);
+            vec3 shiftedEdge = mix(vec3(.12, .15, .20), vec3(.10, .25, .43), redshift);
             vec3 edge = mix(vec3(.13, .18, .25), shiftedEdge, .58);
             vec3 blackBody = vec3(.0005, .0012, .0035);
             gl_FragColor = vec4(blackBody + edge * fresnel * .76, 1.0);
@@ -935,7 +936,7 @@
           void main() {
             float d = length(vUv - .5) * 2.0;
             float halo = smoothstep(1.0, .35, d) * smoothstep(.47, .78, d);
-            vec3 c = mix(vec3(.12, .28, .62), vec3(.92, .28, .05), smoothstep(.2, 1.0, vUv.x));
+            vec3 c = mix(vec3(.12, .28, .62), vec3(.11, .14, .19), smoothstep(.2, 1.0, vUv.x));
             gl_FragColor = vec4(c * halo * .4, halo * .16);
           }
         `,
