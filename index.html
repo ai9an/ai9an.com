@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="A personal project hub for experiments, tools, and ideas.">
   <meta name="theme-color" content="#030712">
+  <meta name="color-scheme" content="dark">
   <title>ai9an.com</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -60,6 +61,7 @@
     html {
       scroll-behavior: smooth;
       background: var(--void);
+      color-scheme: dark;
     }
 
     body {
@@ -117,11 +119,11 @@
 
     .brand {
       text-decoration: none;
-      font-family: var(--font-display);
+      font-family: var(--font-mono);
       font-size: .75rem;
-      font-weight: 760;
+      font-weight: 600;
       letter-spacing: .24em;
-      text-transform: uppercase;
+      text-transform: lowercase;
     }
 
     .nav-link {
@@ -190,6 +192,7 @@
       margin: 0;
       max-width: 10ch;
       color: var(--title);
+      -webkit-text-fill-color: var(--title);
       font-family: var(--font-display);
       font-size: clamp(4.8rem, 12vw, 10rem);
       font-weight: 620;
@@ -507,7 +510,7 @@
   <canvas id="cosmos" aria-hidden="true"></canvas>
 
   <header class="page-nav" aria-label="Main navigation">
-    <a class="brand" id="brand" href="#top">ai9an</a>
+    <a class="brand" id="brand" href="https://github.com/ai9an">github</a>
     <a class="nav-link" href="#projects">Selected work</a>
   </header>
 
@@ -548,6 +551,9 @@
     ───────────────────────────────────────────────────────────── */
     const SITE = {
       name: "ai9an",
+      title: "ai9an.com",
+      githubLabel: "github",
+      githubLink: "https://github.com/ai9an",
       description: "A personal project hub for experiments, tools, and ideas.",
       projectIntro: "A small constellation of things I have made, maintained, or am still pulling into focus.",
       footer: "Built in the quiet between stars."
@@ -590,9 +596,10 @@
       const $ = (selector) => document.querySelector(selector);
 
       function applyContent() {
-        document.title = `${SITE.name} — Project Hub`;
+        document.title = SITE.title;
         $("meta[name='description']").content = SITE.description;
-        $("#brand").textContent = SITE.name;
+        $("#brand").textContent = SITE.githubLabel;
+        $("#brand").href = SITE.githubLink;
         $("#hero-title").textContent = SITE.name;
         $("#project-intro").textContent = SITE.projectIntro;
         $("#footer-name").textContent = SITE.name;
