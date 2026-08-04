@@ -4,7 +4,7 @@
 
 **Landing page for [ai9an.com](https://ai9an.com)**
 
-![Preview](readme-preview.png)
+![Preview](readme-preview2.png)
 
 <div align="left">
 

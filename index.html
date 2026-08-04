@@ -20,7 +20,7 @@
       --line: rgba(159, 190, 230, 0.15);
       --line-bright: rgba(171, 207, 255, 0.35);
       --text: #5d6775;
-      --title: #060a17;
+      --title: #ffffff;
       --muted: #9aa9be;
       --blue: #91cfff;
       --blue-soft: #4c82bd;
@@ -158,17 +158,17 @@
 
     .hero {
       position: relative;
-      z-index: 1;
+      z-index: auto;
       min-height: 100svh;
       display: grid;
       place-items: center;
-      isolation: isolate;
+      isolation: auto;
     }
 
     .hero::before {
       content: "";
       position: absolute;
-      z-index: -1;
+      z-index: 0;
       inset: 0;
       pointer-events: none;
       background:
@@ -177,6 +177,7 @@
     }
 
     .hero-content {
+      position: relative;
       width: min(1180px, calc(100% - 3rem));
       padding-top: min(6rem, 12vh);
       pointer-events: none;
@@ -193,6 +194,7 @@
       max-width: 10ch;
       color: var(--title);
       -webkit-text-fill-color: var(--title);
+      mix-blend-mode: overlay;
       font-family: var(--font-display);
       font-size: clamp(4.8rem, 12vw, 10rem);
       font-weight: 620;
