@@ -1,0 +1,1092 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A personal project hub for experiments, tools, and ideas.">
+  <meta name="theme-color" content="#030712">
+  <title>ai9an.com</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=IBM+Plex+Sans:wght@300;400;500;600&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --void: #000000;
+      --space: #000103;
+      --space-blue: #040a17;
+      --surface: rgba(8, 17, 34, 0.68);
+      --surface-strong: rgba(7, 14, 28, 0.9);
+      --line: rgba(159, 190, 230, 0.15);
+      --line-bright: rgba(171, 207, 255, 0.35);
+      --text: #5d6775;
+      --title: #0d1726;
+      --muted: #9aa9be;
+      --blue: #91cfff;
+      --blue-soft: #4c82bd;
+      --gold: #e8c985;
+      --live: #93e6c0;
+      --wip: #edc987;
+      --danger: #f0a0a8;
+      --shadow: rgba(0, 0, 0, 0.48);
+      --clear: transparent;
+      --page-end: #040914;
+      --cosmic-glow: rgba(18, 38, 74, .28);
+      --cosmic-glow-soft: rgba(21, 46, 83, .18);
+      --hero-shade: rgba(2, 5, 14, .48);
+      --hero-shade-soft: rgba(2, 5, 14, .28);
+      --button-glow: rgba(127, 195, 255, .08);
+      --label-muted: rgba(190, 207, 229, .55);
+      --section-glow: rgba(29, 58, 104, .14);
+      --section-cap: rgba(3, 7, 18, .96);
+      --card-light: rgba(18, 34, 61, .46);
+      --card-dark: rgba(4, 10, 22, .72);
+      --card-sheen: rgba(255, 255, 255, .025);
+      --card-shadow: rgba(0, 0, 0, .14);
+      --card-spotlight: rgba(120, 186, 255, .12);
+      --card-hover-shadow: rgba(0, 4, 14, .34);
+      --card-hover-glow: rgba(52, 116, 184, .06);
+      --number-muted: rgba(169, 195, 229, .38);
+      --tag-line: rgba(150, 184, 226, .12);
+      --tag-text: rgba(197, 214, 236, .68);
+      --tag-fill: rgba(103, 146, 202, .035);
+      --footer-text: rgba(168, 188, 214, .58);
+      --font-display: "Space Grotesk", ui-sans-serif, sans-serif;
+      --font-body: "IBM Plex Sans", ui-sans-serif, sans-serif;
+      --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--void);
+    }
+
+    body {
+      margin: 0;
+      min-width: 280px;
+      overflow-x: hidden;
+      color: var(--text);
+      background: var(--space);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; }
+
+    .skip-link {
+      position: fixed;
+      z-index: 100;
+      top: 1rem;
+      left: 1rem;
+      padding: .7rem 1rem;
+      border-radius: .5rem;
+      color: var(--space);
+      background: var(--text);
+      transform: translateY(-180%);
+      transition: transform .2s ease;
+    }
+
+    .skip-link:focus { transform: translateY(0); }
+
+    #cosmos {
+      position: fixed;
+      z-index: 0;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      background:
+        radial-gradient(circle at 62% 55%, var(--cosmic-glow), var(--clear) 28%),
+        radial-gradient(circle at 20% 5%, var(--cosmic-glow-soft), var(--clear) 34%),
+        linear-gradient(150deg, var(--space-blue), var(--void) 62%);
+    }
+
+    .page-nav {
+      position: absolute;
+      z-index: 5;
+      top: 0;
+      left: 50%;
+      width: min(1180px, calc(100% - 3rem));
+      height: 82px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transform: translateX(-50%);
+    }
+
+    .brand {
+      text-decoration: none;
+      font-family: var(--font-display);
+      font-size: .75rem;
+      font-weight: 760;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+    }
+
+    .nav-link {
+      display: inline-flex;
+      align-items: center;
+      gap: .55rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: .78rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      transition: color .25s ease;
+    }
+
+    .nav-link::after {
+      content: "";
+      width: 1.8rem;
+      height: 1px;
+      background: var(--line-bright);
+      transition: width .25s ease, background .25s ease;
+    }
+
+    .nav-link:hover,
+    .nav-link:focus-visible { color: var(--text); }
+
+    .nav-link:hover::after,
+    .nav-link:focus-visible::after {
+      width: 2.6rem;
+      background: var(--blue);
+    }
+
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100svh;
+      display: grid;
+      place-items: center;
+      isolation: isolate;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, var(--hero-shade), var(--clear) 47%),
+        linear-gradient(180deg, var(--hero-shade-soft), var(--clear) 28%, var(--clear) 74%, var(--space) 100%);
+    }
+
+    .hero-content {
+      width: min(1180px, calc(100% - 3rem));
+      padding-top: min(6rem, 12vh);
+      pointer-events: none;
+    }
+
+    .hero-copy {
+      max-width: 570px;
+      margin-top: -8vh;
+      text-shadow: 0 2px 30px var(--shadow);
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 10ch;
+      color: var(--title);
+      font-family: var(--font-display);
+      font-size: clamp(4.8rem, 12vw, 10rem);
+      font-weight: 620;
+      line-height: .78;
+      letter-spacing: -.075em;
+    }
+
+    .hero-action {
+      margin-top: 2rem;
+      display: inline-flex;
+      align-items: center;
+      gap: .75rem;
+      color: var(--text);
+      text-decoration: none;
+      font-family: var(--font-mono);
+      font-size: .78rem;
+      font-weight: 650;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      pointer-events: auto;
+    }
+
+    .hero-action span {
+      display: grid;
+      width: 2rem;
+      height: 2rem;
+      place-items: center;
+      border: 1px solid var(--line-bright);
+      border-radius: 50%;
+      transition: border-color .25s ease, transform .25s ease, background .25s ease;
+    }
+
+    .hero-action:hover span,
+    .hero-action:focus-visible span {
+      border-color: var(--blue);
+      background: var(--button-glow);
+      transform: translateY(3px);
+    }
+
+    .scene-label {
+      position: absolute;
+      right: max(1.5rem, calc((100vw - 1180px) / 2));
+      bottom: 2.2rem;
+      display: flex;
+      align-items: center;
+      gap: .65rem;
+      color: var(--label-muted);
+      font-family: var(--font-mono);
+      font-size: .6rem;
+      letter-spacing: .17em;
+      text-transform: uppercase;
+    }
+
+    .scene-label::before {
+      content: "";
+      width: .38rem;
+      height: .38rem;
+      border-radius: 50%;
+      background: var(--blue);
+      box-shadow: 0 0 12px var(--blue);
+      animation: breathe 3s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      50% { opacity: .35; transform: scale(.7); }
+    }
+
+    .projects-section {
+      position: relative;
+      z-index: 2;
+      overflow: hidden;
+      padding: clamp(6rem, 11vw, 10rem) max(1.5rem, calc((100vw - 1180px) / 2));
+      background:
+        radial-gradient(circle at 85% 20%, var(--section-glow), var(--clear) 30%),
+        linear-gradient(180deg, var(--section-cap), var(--space) 15%, var(--page-end) 100%);
+    }
+
+    .projects-section::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: min(1180px, calc(100% - 3rem));
+      height: 1px;
+      background: linear-gradient(90deg, var(--clear), var(--line-bright), var(--clear));
+      transform: translateX(-50%);
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 420px);
+      gap: 3rem;
+      align-items: end;
+      margin-bottom: clamp(3rem, 6vw, 5rem);
+    }
+
+    .section-kicker {
+      margin: 0 0 .9rem;
+      color: var(--blue);
+      font-family: var(--font-mono);
+      font-size: .66rem;
+      font-weight: 700;
+      letter-spacing: .23em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 520;
+      line-height: 1;
+      letter-spacing: -.055em;
+    }
+
+    .section-intro {
+      margin: 0;
+      color: var(--muted);
+      font-size: .98rem;
+      line-height: 1.7;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .project-card {
+      position: relative;
+      grid-column: span 6;
+      min-height: 290px;
+      display: flex;
+      flex-direction: column;
+      padding: clamp(1.5rem, 3vw, 2.2rem);
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      text-decoration: none;
+      background:
+        linear-gradient(135deg, var(--card-light), var(--card-dark)),
+        var(--surface);
+      box-shadow: inset 0 1px 0 var(--card-sheen), 0 20px 60px var(--card-shadow);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transform: translateY(0);
+      transition: transform .35s cubic-bezier(.2, .7, .2, 1), border-color .35s ease, box-shadow .35s ease;
+    }
+
+    .project-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0;
+      background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 50%), var(--card-spotlight), var(--clear) 42%);
+      transition: opacity .35s ease;
+    }
+
+    .project-card:hover,
+    .project-card:focus-visible {
+      border-color: var(--line-bright);
+      box-shadow: 0 24px 70px var(--card-hover-shadow), 0 0 34px var(--card-hover-glow);
+      transform: translateY(-6px);
+      outline: none;
+    }
+
+    .project-card:hover::before,
+    .project-card:focus-visible::before { opacity: 1; }
+
+    .project-number {
+      position: absolute;
+      right: 1.7rem;
+      top: 1.5rem;
+      color: var(--number-muted);
+      font-family: var(--font-mono);
+      font-size: .65rem;
+      letter-spacing: .12em;
+    }
+
+    .project-status {
+      --status-color: var(--muted);
+      width: max-content;
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      margin-bottom: auto;
+      color: var(--status-color);
+      font-family: var(--font-mono);
+      font-size: .61rem;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .project-status::before {
+      content: "";
+      width: .35rem;
+      height: .35rem;
+      border-radius: 50%;
+      background: var(--status-color);
+      box-shadow: 0 0 10px var(--status-color);
+    }
+
+    .project-status[data-status="live"] { --status-color: var(--live); }
+    .project-status[data-status="wip"] { --status-color: var(--wip); }
+    .project-status[data-status="archived"] { --status-color: var(--danger); }
+
+    .project-title {
+      position: relative;
+      margin: 2.5rem 0 .85rem;
+      font-family: var(--font-display);
+      font-size: clamp(1.45rem, 2.8vw, 2rem);
+      font-weight: 520;
+      letter-spacing: -.035em;
+    }
+
+    .project-description {
+      position: relative;
+      max-width: 38rem;
+      margin: 0;
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.65;
+    }
+
+    .card-footer {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 1.8rem;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .45rem;
+    }
+
+    .tag {
+      padding: .35rem .55rem;
+      border: 1px solid var(--tag-line);
+      border-radius: 100px;
+      color: var(--tag-text);
+      background: var(--tag-fill);
+      font-family: var(--font-mono);
+      font-size: .57rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .card-arrow {
+      flex: 0 0 auto;
+      color: var(--blue);
+      font-size: 1.2rem;
+      transform: rotate(-45deg);
+      transition: transform .3s ease;
+    }
+
+    .project-card:hover .card-arrow,
+    .project-card:focus-visible .card-arrow { transform: rotate(-45deg) translate(3px, 3px); }
+
+    .site-footer {
+      position: relative;
+      z-index: 2;
+      padding: 1.8rem max(1.5rem, calc((100vw - 1180px) / 2));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      border-top: 1px solid var(--line);
+      color: var(--footer-text);
+      background: var(--page-end);
+      font-family: var(--font-mono);
+      font-size: .65rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .footer-mark { color: var(--text); }
+
+    @media (max-width: 760px) {
+      .page-nav { width: calc(100% - 2rem); }
+      .hero-content { width: calc(100% - 2rem); }
+      .hero-copy { margin-top: -14vh; }
+      h1 { font-size: clamp(4.2rem, 24vw, 7rem); }
+      .scene-label { right: 1rem; bottom: 1.4rem; }
+      .section-heading { grid-template-columns: 1fr; gap: 1.5rem; }
+      .project-card { grid-column: 1 / -1; min-height: 270px; }
+      .site-footer { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (max-width: 420px) {
+      .nav-link::after { display: none; }
+      .hero-copy { margin-top: -10vh; }
+      .hero-action { margin-top: 1.4rem; }
+      .scene-label { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#projects">Skip to projects</a>
+  <canvas id="cosmos" aria-hidden="true"></canvas>
+
+  <header class="page-nav" aria-label="Main navigation">
+    <a class="brand" id="brand" href="#top">ai9an</a>
+    <a class="nav-link" href="#projects">Selected work</a>
+  </header>
+
+  <main>
+    <section class="hero" id="top" aria-labelledby="hero-title">
+      <div class="hero-content">
+        <div class="hero-copy">
+          <h1 id="hero-title">ai9an</h1>
+          <a class="hero-action" href="#projects">Explore projects <span aria-hidden="true">↓</span></a>
+        </div>
+      </div>
+      <div class="scene-label" aria-hidden="true">Interactive singularity · move to observe</div>
+    </section>
+
+    <section class="projects-section" id="projects" aria-labelledby="projects-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">Selected coordinates</p>
+          <h2 id="projects-title">Projects</h2>
+        </div>
+        <p class="section-intro" id="project-intro">A small constellation of things I have made, maintained, or am still pulling into focus.</p>
+      </div>
+      <div class="projects-grid" id="projects-grid"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span><span class="footer-mark" id="footer-name">ai9an</span> · <span id="copyright-year"></span></span>
+    <span id="footer-note">Built in the quiet between stars.</span>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script>
+    /* ─────────────────────────────────────────────────────────────
+       EDIT THESE TWO OBJECTS TO UPDATE THE SITE.
+       Keep links relative (for example "./project/") when they point
+       to pages in this repository so GitHub Pages subpaths keep working.
+    ───────────────────────────────────────────────────────────── */
+    const SITE = {
+      name: "ai9an",
+      description: "A personal project hub for experiments, tools, and ideas.",
+      projectIntro: "A small constellation of things I have made, maintained, or am still pulling into focus.",
+      footer: "Built in the quiet between stars."
+    };
+
+    const PROJECTS = [
+      {
+        title: "Signal Garden",
+        description: "A living collection of generative sketches exploring rhythm, emergence, and the useful accidents between them.",
+        tags: ["Generative", "WebGL", "Creative code"],
+        link: "#",
+        status: "live"
+      },
+      {
+        title: "Nightjar",
+        description: "A quiet, keyboard-first workspace for catching fragments of thought before they disappear.",
+        tags: ["Tool", "Interface", "Local-first"],
+        link: "#",
+        status: "wip"
+      },
+      {
+        title: "Small Hours",
+        description: "Field notes on software, systems, and making things that reward a closer look.",
+        tags: ["Writing", "Research"],
+        link: "#",
+        status: "live"
+      },
+      {
+        title: "Liminal Maps",
+        description: "An experiment in turning place, memory, and incomplete data into explorable digital landscapes.",
+        tags: ["Maps", "Data", "Experiment"],
+        link: "#",
+        status: "wip"
+      }
+    ];
+
+    (() => {
+      "use strict";
+
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const $ = (selector) => document.querySelector(selector);
+
+      function applyContent() {
+        document.title = `${SITE.name} — Project Hub`;
+        $("meta[name='description']").content = SITE.description;
+        $("#brand").textContent = SITE.name;
+        $("#hero-title").textContent = SITE.name;
+        $("#project-intro").textContent = SITE.projectIntro;
+        $("#footer-name").textContent = SITE.name;
+        $("#footer-note").textContent = SITE.footer;
+        $("#copyright-year").textContent = new Date().getFullYear();
+
+        const grid = $("#projects-grid");
+        const fragment = document.createDocumentFragment();
+
+        PROJECTS.forEach((project, index) => {
+          const card = document.createElement("a");
+          card.className = "project-card";
+          card.href = project.link;
+          card.setAttribute("aria-label", `Open ${project.title}`);
+
+          const number = document.createElement("span");
+          number.className = "project-number";
+          number.textContent = String(index + 1).padStart(2, "0");
+
+          const status = document.createElement("span");
+          status.className = "project-status";
+          status.dataset.status = project.status || "project";
+          status.textContent = project.status || "project";
+
+          const title = document.createElement("h3");
+          title.className = "project-title";
+          title.textContent = project.title;
+
+          const description = document.createElement("p");
+          description.className = "project-description";
+          description.textContent = project.description;
+
+          const footer = document.createElement("div");
+          footer.className = "card-footer";
+          const tags = document.createElement("div");
+          tags.className = "tags";
+          (project.tags || []).forEach((label) => {
+            const tag = document.createElement("span");
+            tag.className = "tag";
+            tag.textContent = label;
+            tags.appendChild(tag);
+          });
+          const arrow = document.createElement("span");
+          arrow.className = "card-arrow";
+          arrow.setAttribute("aria-hidden", "true");
+          arrow.textContent = "→";
+          footer.append(tags, arrow);
+          card.append(number, status, title, description, footer);
+          fragment.appendChild(card);
+        });
+        grid.replaceChildren(fragment);
+
+        grid.addEventListener("pointermove", (event) => {
+          const card = event.target.closest(".project-card");
+          if (!card) return;
+          const rect = card.getBoundingClientRect();
+          card.style.setProperty("--mx", `${event.clientX - rect.left}px`);
+          card.style.setProperty("--my", `${event.clientY - rect.top}px`);
+        });
+      }
+
+      applyContent();
+
+      const canvas = $("#cosmos");
+      if (!window.THREE) {
+        canvas.setAttribute("data-renderer", "unavailable");
+        return;
+      }
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x02040b);
+      scene.fog = new THREE.FogExp2(0x030712, 0.017);
+
+      const camera = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 120);
+      camera.position.set(0, 1.2, 17.5);
+
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: false,
+        alpha: false,
+        powerPreference: "high-performance"
+      });
+      renderer.outputColorSpace = THREE.SRGBColorSpace;
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.15;
+      renderer.setPixelRatio(Math.min(devicePixelRatio, innerWidth < 700 ? 1.25 : 1.6));
+      renderer.setSize(innerWidth, innerHeight, false);
+
+      const universe = new THREE.Group();
+      universe.position.set(innerWidth < 760 ? 1.2 : 3.25, -0.55, 0);
+      scene.add(universe);
+
+      function makeStarField() {
+        const count = innerWidth < 700 ? 550 : 1050;
+        const positions = new Float32Array(count * 3);
+        const brightness = new Float32Array(count);
+        let seed = 918273;
+        const random = () => {
+          seed = (seed * 16807) % 2147483647;
+          return (seed - 1) / 2147483646;
+        };
+        for (let i = 0; i < count; i++) {
+          const radius = 25 + random() * 62;
+          const theta = random() * Math.PI * 2;
+          const cosPhi = random() * 2 - 1;
+          const sinPhi = Math.sqrt(1 - cosPhi * cosPhi);
+          positions[i * 3] = radius * sinPhi * Math.cos(theta);
+          positions[i * 3 + 1] = radius * cosPhi;
+          positions[i * 3 + 2] = radius * sinPhi * Math.sin(theta) - 15;
+          brightness[i] = .35 + random() * .85;
+        }
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute("aBrightness", new THREE.BufferAttribute(brightness, 1));
+        const material = new THREE.ShaderMaterial({
+          transparent: true,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+          vertexShader: `
+            attribute float aBrightness;
+            varying float vBrightness;
+            void main() {
+              vBrightness = aBrightness;
+              vec4 mv = modelViewMatrix * vec4(position, 1.0);
+              gl_PointSize = aBrightness * (90.0 / -mv.z);
+              gl_Position = projectionMatrix * mv;
+            }
+          `,
+          fragmentShader: `
+            varying float vBrightness;
+            void main() {
+              vec2 p = gl_PointCoord - .5;
+              float d = length(p);
+              float core = smoothstep(.22, 0.0, d);
+              float halo = smoothstep(.5, .06, d) * .24;
+              if (d > .5) discard;
+              vec3 color = mix(vec3(.48, .64, .88), vec3(1.0, .9, .72), vBrightness * .22);
+              gl_FragColor = vec4(color, (core + halo) * vBrightness * .68);
+            }
+          `
+        });
+        return new THREE.Points(geometry, material);
+      }
+      const starField = makeStarField();
+      scene.add(starField);
+
+      const diskGeometry = new THREE.RingGeometry(1.38, 5.65, 256, 18);
+      const diskMaterial = new THREE.ShaderMaterial({
+        uniforms: {
+          uTime: { value: 0 },
+          uLayer: { value: 0 }
+        },
+        vertexShader: `
+          varying vec2 vDisk;
+          varying float vRadius;
+          varying float vCameraSide;
+          void main() {
+            vDisk = position.xy;
+            vRadius = length(position.xy);
+            vec3 p = position;
+            float a = atan(p.y, p.x);
+            p.z += sin(a * 3.0) * .035 * smoothstep(1.5, 5.5, vRadius);
+            vec4 viewPosition = modelViewMatrix * vec4(p, 1.0);
+            vec4 viewCenter = modelViewMatrix * vec4(0.0, 0.0, 0.0, 1.0);
+            vCameraSide = viewPosition.z - viewCenter.z;
+            gl_Position = projectionMatrix * viewPosition;
+          }
+        `,
+        fragmentShader: `
+          precision highp float;
+          uniform float uTime;
+          uniform float uLayer;
+          varying vec2 vDisk;
+          varying float vRadius;
+          varying float vCameraSide;
+
+          float hash(vec2 p) {
+            p = fract(p * vec2(123.34, 456.21));
+            p += dot(p, p + 45.32);
+            return fract(p.x * p.y);
+          }
+
+          float noise(vec2 p) {
+            vec2 i = floor(p), f = fract(p);
+            f = f * f * (3.0 - 2.0 * f);
+            return mix(mix(hash(i), hash(i + vec2(1,0)), f.x),
+                       mix(hash(i + vec2(0,1)), hash(i + vec2(1,1)), f.x), f.y);
+          }
+
+          void main() {
+            // The far half renders before the horizon and the near half after it.
+            // This avoids transparent depth writes, which produce missing wedges
+            // on some browser/GPU combinations.
+            if (uLayer < .5 && vCameraSide >= 0.0) discard;
+            if (uLayer > .5 && vCameraSide < 0.0) discard;
+
+            float r = vRadius;
+            float rn = (r - 1.38) / 4.27;
+            float angle = atan(vDisk.y, vDisk.x);
+            // Rotate a coherent texture slowly. Keeping one angular offset for
+            // every noise octave prevents the pattern from morphing over time.
+            float rotation = sin(uTime * .055) * .08;
+
+            // Circular coordinates keep the texture continuous where atan wraps
+            // from PI to -PI. Integer angular frequencies guarantee a closed seam.
+            float flowAngle = angle - rotation + r * .82;
+            vec2 flow = vec2(cos(flowAngle), sin(flowAngle));
+            float detailAngle = (angle - rotation) * 4.0 + r * 1.7;
+            vec2 detailFlow = vec2(cos(detailAngle), sin(detailAngle));
+            float filaments = noise(flow * 3.2 + vec2(r * 1.8, -r * .7));
+            filaments *= .65 + .35 * noise(detailFlow * 2.6 + vec2(r * 2.7, -r * 1.1));
+            float radialWarp = noise(vec2(cos(angle), sin(angle)) * 2.3 + vec2(r * .17));
+            float bands = .62 + .38 * sin(r * 18.0 + radialWarp * 3.5);
+            float density = mix(filaments, bands, .16);
+            density = smoothstep(.04, .98, density + .16);
+
+            vec3 inner = vec3(.76, .82, .87);
+            vec3 hot = vec3(.31, .43, .57);
+            vec3 warm = vec3(.60, .46, .33);
+            vec3 outer = vec3(.18, .11, .09);
+            vec3 color = mix(inner, hot, smoothstep(0.0, .17, rn));
+            color = mix(color, warm, smoothstep(.15, .62, rn));
+            color = mix(color, outer, smoothstep(.58, 1.0, rn));
+
+            float approaching = .48 + .52 * dot(normalize(vDisk), normalize(vec2(-.82, .25)));
+            float doppler = mix(.52, 1.28, pow(max(approaching, 0.0), 1.35));
+            color *= doppler;
+            color += inner * pow(1.0 - rn, 7.0) * .90;
+
+            float innerFade = smoothstep(1.38, 1.53, r);
+            float outerFade = 1.0 - smoothstep(4.7, 5.65, r);
+            float alpha = density * innerFade * outerFade * (.38 + .88 * pow(1.0 - rn, 1.7));
+            alpha *= mix(.7, 1.0, approaching);
+            gl_FragColor = vec4(color * alpha * .96, alpha);
+          }
+        `,
+        transparent: true,
+        depthWrite: false,
+        depthTest: false,
+        side: THREE.FrontSide,
+        blending: THREE.AdditiveBlending
+      });
+      const farDisk = new THREE.Mesh(diskGeometry, diskMaterial);
+      farDisk.rotation.set(1.19, 0.08, -0.13);
+      farDisk.renderOrder = 1;
+      universe.add(farDisk);
+
+      const nearDiskMaterial = diskMaterial.clone();
+      nearDiskMaterial.uniforms.uLayer.value = 1;
+      const nearDisk = new THREE.Mesh(diskGeometry, nearDiskMaterial);
+      nearDisk.rotation.copy(farDisk.rotation);
+      nearDisk.renderOrder = 3;
+      universe.add(nearDisk);
+
+      const lensGeometry = new THREE.RingGeometry(.98, 1.64, 192, 10);
+      const lensMaterial = new THREE.ShaderMaterial({
+        uniforms: { uTime: { value: 0 } },
+        vertexShader: `
+          varying vec2 vP;
+          void main() {
+            vP = position.xy;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          }
+        `,
+        fragmentShader: `
+          precision highp float;
+          uniform float uTime;
+          varying vec2 vP;
+          void main() {
+            float r = length(vP);
+            float a = atan(vP.y, vP.x);
+            float photonRing = exp(-pow((r - 1.075) * 24.0, 2.0));
+            float warpedDisk = exp(-pow((abs(vP.y) - .58 - .10 * cos(a * 2.0)) * 13.0, 2.0));
+            warpedDisk *= smoothstep(.94, 1.2, r) * (1.0 - smoothstep(1.42, 1.66, r));
+            float flicker = .92 + .08 * sin(a * 12.0 - uTime * .10 + sin(a * 5.0) * 1.2);
+            float directionalLight = pow(max(0.0, cos(a + 2.6)), 2.0);
+            float beam = photonRing * (.84 + .16 * directionalLight);
+            float alpha = beam * .74 + warpedDisk * flicker * .40;
+            vec3 blue = vec3(.35, .48, .62);
+            vec3 gold = vec3(.58, .42, .27);
+            vec3 color = mix(gold, blue, smoothstep(-.45, .75, cos(a + 2.6)));
+            color += vec3(.65, .72, .78) * photonRing * .62;
+            gl_FragColor = vec4(color * alpha, alpha);
+          }
+        `,
+        transparent: true,
+        depthWrite: false,
+        depthTest: false,
+        blending: THREE.AdditiveBlending
+      });
+      const lens = new THREE.Mesh(lensGeometry, lensMaterial);
+      lens.position.z = .26;
+      lens.renderOrder = 4;
+      universe.add(lens);
+
+      const horizonMaterial = new THREE.ShaderMaterial({
+        uniforms: {
+          uView: { value: new THREE.Vector3() }
+        },
+        vertexShader: `
+          varying vec3 vNormal;
+          varying vec3 vWorld;
+          void main() {
+            vNormal = normalize(normalMatrix * normal);
+            vec4 world = modelMatrix * vec4(position, 1.0);
+            vWorld = world.xyz;
+            gl_Position = projectionMatrix * viewMatrix * world;
+          }
+        `,
+        fragmentShader: `
+          varying vec3 vNormal;
+          varying vec3 vWorld;
+          uniform vec3 uView;
+          void main() {
+            vec3 viewDir = normalize(uView - vWorld);
+            float fresnel = pow(1.0 - max(dot(vNormal, viewDir), 0.0), 5.5);
+            float redshift = smoothstep(-.7, .8, vNormal.x);
+            vec3 shiftedEdge = mix(vec3(.24, .08, .055), vec3(.10, .25, .43), redshift);
+            vec3 edge = mix(vec3(.13, .18, .25), shiftedEdge, .58);
+            vec3 blackBody = vec3(.0005, .0012, .0035);
+            gl_FragColor = vec4(blackBody + edge * fresnel * .76, 1.0);
+          }
+        `,
+        transparent: true,
+        depthWrite: false,
+        depthTest: false
+      });
+      const horizon = new THREE.Mesh(new THREE.SphereGeometry(1.02, 64, 48), horizonMaterial);
+      horizon.renderOrder = 2;
+      universe.add(horizon);
+
+      const haloMaterial = new THREE.ShaderMaterial({
+        vertexShader: `
+          varying vec2 vUv;
+          void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }
+        `,
+        fragmentShader: `
+          varying vec2 vUv;
+          void main() {
+            float d = length(vUv - .5) * 2.0;
+            float halo = smoothstep(1.0, .35, d) * smoothstep(.47, .78, d);
+            vec3 c = mix(vec3(.12, .28, .62), vec3(.92, .28, .05), smoothstep(.2, 1.0, vUv.x));
+            gl_FragColor = vec4(c * halo * .4, halo * .16);
+          }
+        `,
+        transparent: true,
+        depthWrite: false,
+        depthTest: false,
+        blending: THREE.AdditiveBlending
+      });
+      const halo = new THREE.Mesh(new THREE.PlaneGeometry(4.3, 4.3), haloMaterial);
+      halo.position.z = -.1;
+      halo.renderOrder = 0;
+      universe.add(halo);
+
+      function makeGlowTexture(core, corona) {
+        const textureCanvas = document.createElement("canvas");
+        textureCanvas.width = textureCanvas.height = 128;
+        const ctx = textureCanvas.getContext("2d");
+        const gradient = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+        gradient.addColorStop(0, "rgba(255,255,255,1)");
+        gradient.addColorStop(.07, core);
+        gradient.addColorStop(.22, corona);
+        gradient.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 128, 128);
+        const texture = new THREE.CanvasTexture(textureCanvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        return texture;
+      }
+
+      const orbiters = [];
+      const orbitSpecs = [
+        { a: 6.1, e: .31, speed: .18, phase: .35, tiltX: .45, tiltZ: -.22, size: .11, color: 0xd9f2ff, glow: ["rgba(218,246,255,1)", "rgba(91,183,255,.42)"] },
+        { a: 7.8, e: .42, speed: .105, phase: 5.6, tiltX: -.32, tiltZ: .47, size: .085, color: 0xffe4a4, glow: ["rgba(255,236,179,1)", "rgba(255,171,67,.38)"] }
+      ];
+
+      function orbitPoint(spec, anomaly) {
+        let E = anomaly;
+        for (let i = 0; i < 5; i++) E -= (E - spec.e * Math.sin(E) - anomaly) / (1 - spec.e * Math.cos(E));
+        const b = spec.a * Math.sqrt(1 - spec.e * spec.e);
+        return new THREE.Vector3(spec.a * (Math.cos(E) - spec.e), 0, b * Math.sin(E));
+      }
+
+      orbitSpecs.forEach((spec) => {
+        const rotation = new THREE.Euler(spec.tiltX, 0, spec.tiltZ, "XYZ");
+        const points = [];
+        for (let i = 0; i <= 160; i++) points.push(orbitPoint(spec, i / 160 * Math.PI * 2).applyEuler(rotation));
+        const orbit = new THREE.Line(
+          new THREE.BufferGeometry().setFromPoints(points),
+          new THREE.LineBasicMaterial({ color: 0x5278a4, transparent: true, opacity: .12, depthWrite: false })
+        );
+        universe.add(orbit);
+
+        const bodyMaterial = new THREE.MeshBasicMaterial({ color: spec.color, transparent: true, toneMapped: false });
+        const body = new THREE.Mesh(new THREE.SphereGeometry(spec.size, 24, 16), bodyMaterial);
+        const glowMaterial = new THREE.SpriteMaterial({
+          map: makeGlowTexture(...spec.glow),
+          color: 0xffffff,
+          transparent: true,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+          toneMapped: false
+        });
+        const glow = new THREE.Sprite(glowMaterial);
+        glow.scale.setScalar(spec.size * 19);
+        body.add(glow);
+        universe.add(body);
+        orbiters.push({ spec, rotation, body, bodyMaterial, glowMaterial });
+      });
+
+      const pointer = new THREE.Vector2();
+      const cameraTarget = new THREE.Vector3();
+      let running = true;
+      let frameId = 0;
+      const start = performance.now();
+      const lookAt = new THREE.Vector3();
+      const blackHoleWorld = new THREE.Vector3();
+      const parallaxLook = new THREE.Vector3();
+
+      function updateOrbiter(item, time) {
+        const point = orbitPoint(item.spec, time * item.spec.speed + item.spec.phase).applyEuler(item.rotation);
+        item.body.position.copy(point);
+
+        const frontness = THREE.MathUtils.clamp((point.z + item.spec.a) / (item.spec.a * 2), 0, 1);
+        const screenDistance = Math.hypot(point.x, point.y);
+        const behindAndNear = point.z < 0 && screenDistance < 1.45;
+        const visibility = behindAndNear ? .13 : THREE.MathUtils.lerp(.55, 1, frontness);
+        item.bodyMaterial.opacity = visibility;
+        item.glowMaterial.opacity = visibility;
+        const pulse = 1 + Math.sin(time * 2.1 + item.spec.phase) * .035;
+        item.body.scale.setScalar(pulse);
+      }
+
+      function render(timeMs = 0) {
+        const time = reducedMotion.matches ? 11.5 : (timeMs - start) * .001;
+        diskMaterial.uniforms.uTime.value = time;
+        nearDiskMaterial.uniforms.uTime.value = time;
+        lensMaterial.uniforms.uTime.value = time;
+
+        orbiters.forEach((item) => updateOrbiter(item, time));
+        starField.rotation.y = time * .0018;
+
+        const driftX = Math.sin(time * .11) * .14;
+        const driftY = Math.cos(time * .085) * .1;
+        cameraTarget.set(
+          pointer.x * .36 + driftX,
+          1.2 + pointer.y * .22 + driftY,
+          17.5
+        );
+        camera.position.lerp(cameraTarget, reducedMotion.matches ? 1 : .025);
+        universe.getWorldPosition(blackHoleWorld);
+        const compositionShift = innerWidth < 760 ? -.72 : -1.85;
+        parallaxLook.set(compositionShift + pointer.x * .12, pointer.y * .08, 0);
+        lookAt.copy(blackHoleWorld).add(parallaxLook);
+        camera.lookAt(lookAt);
+        horizonMaterial.uniforms.uView.value.copy(camera.position);
+        renderer.render(scene, camera);
+
+        if (running && !reducedMotion.matches) frameId = requestAnimationFrame(render);
+      }
+
+      function startRendering() {
+        cancelAnimationFrame(frameId);
+        if (document.hidden) return;
+        running = true;
+        if (reducedMotion.matches) render(0);
+        else frameId = requestAnimationFrame(render);
+      }
+
+      addEventListener("pointermove", (event) => {
+        if (reducedMotion.matches) return;
+        pointer.x = event.clientX / innerWidth * 2 - 1;
+        pointer.y = -(event.clientY / innerHeight * 2 - 1);
+      }, { passive: true });
+
+      addEventListener("resize", () => {
+        camera.aspect = innerWidth / innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setPixelRatio(Math.min(devicePixelRatio, innerWidth < 700 ? 1.25 : 1.6));
+        renderer.setSize(innerWidth, innerHeight, false);
+        universe.position.x = innerWidth < 760 ? 1.2 : 3.25;
+        if (reducedMotion.matches) render(0);
+      }, { passive: true });
+
+      document.addEventListener("visibilitychange", () => {
+        running = !document.hidden;
+        if (running) startRendering();
+        else cancelAnimationFrame(frameId);
+      });
+      reducedMotion.addEventListener("change", startRendering);
+      startRendering();
+    })();
+  </script>
+</body>
+</html>
