@@ -334,6 +334,7 @@
       border: 1px solid var(--line);
       border-radius: 1rem;
       text-decoration: none;
+      text-transform: lowercase;
       background:
         linear-gradient(135deg, var(--card-light), var(--card-dark)),
         var(--surface);
@@ -563,6 +564,13 @@
     };
 
     const PROJECTS = [
+      {
+        title: "ASCII",
+        description: "A feature-rich ASCII art generator for turning media into character-based artwork across multiple output formats.",
+        tags: ["ASCII Art", "Creative Tool", "JavaScript"],
+        link: "https://ascii.ai9an.com/",
+        status: "live"
+      },
       {
         title: "Dither Girl",
         description: "A private, browser-based studio for dithering images and video, shaping colour palettes, and exporting the results without uploads.",
